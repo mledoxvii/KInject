@@ -3,11 +3,15 @@ package com.mledoxvii.kinject
 import com.mledoxvii.kinject.injectable.Injectable
 import com.mledoxvii.kinject.resolver.Resolver
 
-open class KInjector: Injector {
+open class KInjector(): Injector {
 
     private val builders: MutableMap<String, Any> = mutableMapOf()
     private val singletonInjectables: MutableSet<String> = mutableSetOf()
     private val singletonInstances: MutableMap<String, Any> = mutableMapOf()
+
+    constructor(registrators: List<Registrator>): this() {
+        registrators.forEach { it.registerOn(this) }
+    }
 
     override fun <Params, Element: Any> register(
         injectable: Injectable<Params, Element>,

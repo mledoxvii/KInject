@@ -96,6 +96,22 @@ class KInjectorTest {
         assertEquals(expectedDefaultArg, defaultExample.arg)
         assertEquals(expectedHelloArg, helloExample.arg)
     }
+
+    @Test
+    fun `Should resolve injectables when registered from provided registrators`() {
+        val expectedClass1Arg = ExampleClass1Registrator.ARG
+        val expectedClass2Arg = ExampleClass2Registrator.ARG
+        sut = KInjector(listOf(
+            ExampleClass1Registrator(),
+            ExampleClass2Registrator()
+        ))
+
+        val class1Instance: ExampleClass1 = sut.resolve(ExampleClass1DefaultInjectable().resolver)
+        val class2Instance: ExampleClass2 = sut.resolve(ExampleClass2Injectable().resolver)
+
+        assertEquals(expectedClass1Arg, class1Instance.arg)
+        assertEquals(expectedClass2Arg, class2Instance.arg)
+    }
 }
 
 //region Example Class 1
@@ -105,6 +121,16 @@ data class ExampleClass1(var arg: String)
 class ExampleClass1DefaultInjectable: NoParamsInjectable<ExampleClass1>()
 class ExampleClass1HelloInjectable: NoParamsInjectable<ExampleClass1>()
 
+class ExampleClass1Registrator: Registrator {
+    companion object {
+        const val ARG = "ExampleClass1Registrator arg"
+    }
+
+    override fun registerOn(injector: Injector) {
+        injector.register(ExampleClass1DefaultInjectable()) { _, _ -> ExampleClass1(ARG) }
+    }
+}
+
 //endregion
 
 //region Example Class 2
@@ -113,5 +139,17 @@ data class ExampleClass2(var arg: String, var class1: ExampleClass1)
 
 class ExampleClass2Injectable: NoParamsInjectable<ExampleClass2>()
 class ExampleClass2ArgsInjectable: BaseInjectable<Pair<String, ExampleClass1>, ExampleClass2>()
+
+class ExampleClass2Registrator: Registrator {
+    companion object {
+        const val ARG = "ExampleClass2Registrator arg"
+    }
+
+    override fun registerOn(injector: Injector) {
+        injector.register(ExampleClass2Injectable()) { inj, _ ->
+            ExampleClass2(ARG, inj.resolve(ExampleClass1DefaultInjectable().resolver))
+        }
+    }
+}
 
 //endregion
