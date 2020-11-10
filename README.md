@@ -63,3 +63,27 @@ val controller: SomeController = SomeController(injector.resolve(ApiClientInject
 
 controller.onSomeEventTriggered()
 ```
+
+## Runtime Arguments
+
+The injected elements may require arguments that cannot be resolved by the injector, like cases where the argument is calculated at runtime. For these cases you have to specify the arguments type in the _injectable_ using the `BaseInjectable<Params, Element>` class.
+
+```kotlin
+class MyClass(val arg1: String, val arg2: Int)
+
+class MyClassInjectable: BaseInjectable<Pair<String, Int>, MyClass>()
+```
+
+The parameters are recieved in the _builder_ closure when registering the _injectable_.
+
+```kotlin
+injector.register(MyClassInjectable()) { _, (arg1, arg2) ->
+    MyClass(arg1, arg2)
+}
+```
+
+Then you have to supply the arguments when resolving the element.
+
+```kotlin
+val myClass: MyClass = injector.resolve(MyClassInjectable().using(Pair("Arg1", 2)))
+```
