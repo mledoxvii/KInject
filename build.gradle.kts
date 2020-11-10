@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.4.10"
+    maven
 }
 
 group = "com.mledoxvii"
