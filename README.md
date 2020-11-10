@@ -1,6 +1,27 @@
 # KInject
 Simple dependency injection framework for Kotlin
 
+## Installation
+
+Add JitPack repository to your build file. Add it in your root `build.gradle` at the end of repositories.
+
+```groovy
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+Add KInject dependency.
+
+```groovy
+dependencies {
+    implementation 'com.github.mledoxvii:KInject:1.0.0'
+}
+```
+
 ## Basic Usage
 
 For a simple use-case where we have a class with a dependency like the following.
