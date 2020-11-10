@@ -87,3 +87,39 @@ Then you have to supply the arguments when resolving the element.
 ```kotlin
 val myClass: MyClass = injector.resolve(MyClassInjectable().using(Pair("Arg1", 2)))
 ```
+
+## Registrators
+
+The `Registrator` interface is provided to avoid a massive function where all elements are registered to the injector. With it you can separate elements registration in multiple modules like the following.
+
+```kotlin
+class HomeScreenRegistrator: Registrator {
+
+    override fun registerOn(injector: Injector) {
+        registerView(injector)
+        registerController(injector)
+        registerRouter(injector)
+    }
+
+    private fun registerView(injector: Injector) {
+        injector.register(HomeViewInjectable()) { ... }
+    }
+
+    private fun registerController(injector: Injector) {
+        injector.register(HomeControllerInjectable()) { ... }
+    }
+
+    private fun registerRouter(injector: Injector) {
+        injector.register(HomeRouterInjectable()) { ... }
+    }
+}
+```
+
+Then you can initialize the app's injector passing in the list of registrators.
+
+```kotlin
+val injector: Injector = KInjector(listOf(
+    HomeScreenRegistrator(),
+    ...
+))
+```
